@@ -38,6 +38,7 @@ def search(SearchIp):
             time.sleep(5)
             resdata = get_data(SearchIp)
     if resdata['status_code'] == 404:
+        print('[red][-]',url,'[red]404 Not Found')
         return
     for i in range(len(resdata['data']['ioc'])):
         if resdata['data']['ioc'][i]['update_time'] > t_t_T:
