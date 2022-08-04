@@ -4,31 +4,21 @@ from json import loads
 import time
 import threading
 from rich import print
-
-# ____Test____
+from config import cookie,time_,typelist
+# ————————————————————————
 url = 'https://www.venuseye.com.cn/ve/ip/ioc'
-
 nowtime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
-time_ = '2021-1-1 00:00:00'
 t_t_T = time.mktime(time.strptime(time_, "%Y-%m-%d %H:%M:%S"))
 # t_t_T ge nowtime
-
-typelist = ['主机扫描', '爆破攻击', 'Web漏洞攻击', '恶意软件']
-
-# _____________
-
-
+# ————————————————————————
 def get_data(SearchIp):
+
     data = {"target": SearchIp}
-    res = post(url, data=data)
+    res = post(url, data=data,cookies=cookie)
     return loads(res.text)
 
 
 def search(SearchIp):
-
-    # data={
-    #     "target":SearchIp
-    # }
     print('[+] Searching: '+SearchIp)
     resdata = get_data(SearchIp)
     if resdata['status_code'] == 409:
@@ -38,11 +28,12 @@ def search(SearchIp):
             time.sleep(5)
             resdata = get_data(SearchIp)
     if resdata['status_code'] == 404:
-        print('[red][-]',url,'[red]404 Not Found')
+        if 'debug' in usrin :print('[yellow][-]',url,'[yellow]None data&404')
         return
+    if 'debug' in usrin :print('[yellow][*] Debug: status_code:',resdata['status_code'])
     for i in range(len(resdata['data']['ioc'])):
         if resdata['data']['ioc'][i]['update_time'] > t_t_T:
-            # print('[*] dbug:Time True')
+
             for type_ in resdata['data']['ioc'][i]['categories']:
                 if type_ in typelist:
                     print('[red][+] Found: [/]'+resdata['data']['ip'])
@@ -52,8 +43,10 @@ def search(SearchIp):
 
 if __name__ == '__main__':
     usrin = sys.argv[1:]
+    if not usrin[1]:
+        usrin[1]='output.txt'
     ips = open(usrin[0], 'r').read().splitlines()
-    out = open('output.txt', 'a+')
+    out = open(usrin[1], 'a+')
 
     for i in ips:
         t = threading.Thread(target=search, args=(i,))
