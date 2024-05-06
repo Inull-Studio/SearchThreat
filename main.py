@@ -9,6 +9,7 @@ from config import cookie, time_, typelist
 url = 'https://www.venuseye.com.cn/ve/ip/ioc'
 nowtime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
 t_t_T = time.mktime(time.strptime(time_, "%Y-%m-%d %H:%M:%S"))
+debug = False
 # t_t_T ge nowtime
 # ————————————————————————
 def get_data(SearchIp):
